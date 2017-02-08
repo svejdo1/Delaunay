@@ -6,8 +6,9 @@ Polygon map terrain generator, written in C#. See http://www-cs-students.stanfor
 ## Overview
 
 Sample:
-
+```C#
 Bootstrapper.Initialize();
-SampleGenerator.CreateVoronoiGraphAndSave();
-
 // will create .png file with dump of polygon map
+SampleGenerator.CreateVoronoiGraphAndSave();
+```
+
