@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>Barbar.Delaunay</title>
+    <authors>Ondrej Svejdar</authors>
+    <owners>Ondrej Svejdar</owners>
+    <licenseUrl>https://github.com/svejdo1/Delaunay/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/svejdo1/Delaunay</projectUrl>
+    <iconUrl>https://github.com/svejdo1/Delaunay/raw/master/icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <summary>
+      <![CDATA[
+      Polygon map terrain generator, written in C#. See http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
+      ]]>
+    </summary>
+    <releaseNotes>First release</releaseNotes>
+    <copyright>Copyright 2017 Ondrej Svejdar</copyright>
+    <tags>polygon terrain map generation 2d</tags>
+  </metadata>
+</package>
