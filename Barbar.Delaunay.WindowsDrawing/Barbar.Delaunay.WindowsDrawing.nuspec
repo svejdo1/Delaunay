@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>Barbar.Delaunay.WindowsDrawing</title>
+    <authors>Ondrej Svejdar</authors>
+    <owners>Ondrej Svejdar</owners>
+    <licenseUrl>https://github.com/svejdo1/Delaunay/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/svejdo1/Delaunay</projectUrl>
+    <iconUrl>https://github.com/svejdo1/Delaunay/raw/master/icon.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <summary>
+      <![CDATA[
+      Sample renderer for polygon map terrain generator (https://www.nuget.org/packages/Barbar.Delaunay/)
+      ]]>
+    </summary>
+    <releaseNotes>First release</releaseNotes>
+    <copyright>Copyright 2017 Ondrej Svejdar</copyright>
+    <tags>polygon terrain map generation 2d</tags>
+    <dependencies>
+      <dependency id="Barbar.Delaunay" version="0.1.0" />
+    </dependencies>
+  </metadata>
+</package>
