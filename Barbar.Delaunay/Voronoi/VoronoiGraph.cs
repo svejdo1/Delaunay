@@ -66,7 +66,10 @@ namespace Barbar.Delaunay.Voronoi
             AssignPolygonMoisture();
             AssignBiomes();
 
-            pixelCenterMap = DrawingHook.ImageFactory.CreateBitmap32bppArgb((int)bounds.width, (int)bounds.width);
+            if (DrawingHook.ImageFactory != null)
+            {
+                pixelCenterMap = DrawingHook.ImageFactory.CreateBitmap32bppArgb((int)bounds.width, (int)bounds.width);
+            }
         }
 
         abstract protected object GetBiome(Center p);
