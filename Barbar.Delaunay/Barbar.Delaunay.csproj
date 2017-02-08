@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{10DF65EB-1EBE-476E-BA1B-0CAB93E341B9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Barbar.Delaunay</RootNamespace>
+    <AssemblyName>Barbar.Delaunay</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\BoundsCheck.cs" />
+    <Compile Include="Core\GenUtils.cs" />
+    <Compile Include="Core\LRExtensions.cs" />
+    <Compile Include="Core\Rectangle.cs" />
+    <Compile Include="Drawing\PortableColor.cs" />
+    <Compile Include="Drawing\DrawingHook.cs" />
+    <Compile Include="Drawing\IGraphics.cs" />
+    <Compile Include="Drawing\IImage.cs" />
+    <Compile Include="Drawing\IImageFactory.cs" />
+    <Compile Include="Drawing\PointInt32.cs" />
+    <Compile Include="Examples\SampleColorData.cs" />
+    <Compile Include="Examples\SampleGenerator.cs" />
+    <Compile Include="Examples\SampleGraphImplementation.cs" />
+    <Compile Include="Core\PointDouble.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Voronoi\Center.cs" />
+    <Compile Include="Core\Circle.cs" />
+    <Compile Include="Core\Edge.cs" />
+    <Compile Include="Core\EdgeList.cs" />
+    <Compile Include="Core\EdgeReorderer.cs" />
+    <Compile Include="Core\Halfedge.cs" />
+    <Compile Include="Core\HalfedgePriorityQueue.cs" />
+    <Compile Include="Core\ICoordinates.cs" />
+    <Compile Include="Core\LineSegment.cs" />
+    <Compile Include="Core\LR.cs" />
+    <Compile Include="Core\Polygon.cs" />
+    <Compile Include="Core\Site.cs" />
+    <Compile Include="Core\SiteList.cs" />
+    <Compile Include="Core\Triangle.cs" />
+    <Compile Include="Core\Vertex.cs" />
+    <Compile Include="Core\FortunesAlgorithm.cs" />
+    <Compile Include="Core\Winding.cs" />
+    <Compile Include="Voronoi\Corner.cs" />
+    <Compile Include="Voronoi\Edge.cs" />
+    <Compile Include="Voronoi\VoronoiGraph.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
