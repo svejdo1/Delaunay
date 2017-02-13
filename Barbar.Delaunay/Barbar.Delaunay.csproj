@@ -43,12 +43,14 @@
     <Compile Include="Core\GenUtils.cs" />
     <Compile Include="Core\LRExtensions.cs" />
     <Compile Include="Core\Rectangle.cs" />
+    <Compile Include="Drawing\IVertexFactory.cs" />
     <Compile Include="Drawing\PortableColor.cs" />
     <Compile Include="Drawing\DrawingHook.cs" />
     <Compile Include="Drawing\IGraphics.cs" />
     <Compile Include="Drawing\IImage.cs" />
     <Compile Include="Drawing\IImageFactory.cs" />
     <Compile Include="Drawing\PointInt32.cs" />
+    <Compile Include="Drawing\Vector3D.cs" />
     <Compile Include="Examples\SampleColorData.cs" />
     <Compile Include="Examples\SampleGenerator.cs" />
     <Compile Include="Examples\SampleGraphImplementation.cs" />

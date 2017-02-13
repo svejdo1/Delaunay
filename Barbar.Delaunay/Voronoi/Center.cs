@@ -1,9 +1,10 @@
 using Barbar.Delaunay.Core;
+using Barbar.Delaunay.Drawing;
 using System.Collections.Generic;
 
 namespace Barbar.Delaunay.Voronoi
 {
-    public class Center
+    public sealed class Center
     {
         public int index;
         public PointDouble loc;
@@ -15,6 +16,8 @@ namespace Barbar.Delaunay.Voronoi
         public double moisture;
         public object biome;
         public double area;
+        public Vertex v;
+        public Vector3D normal;
 
         public Center()
         {

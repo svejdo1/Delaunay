@@ -59,6 +59,7 @@ namespace Barbar.Delaunay.Voronoi
             AssignPolygonElevations();
 
             CalculateDownslopes();
+            AssignNormals();
             //calculateWatersheds();
             CreateRivers();
             AssignCornerMoisture();
@@ -147,7 +148,89 @@ namespace Barbar.Delaunay.Voronoi
 
         public void Paint(IGraphics g)
         {
-            Paint(g, true, true, false, false, false, true);
+            Paint(g, true, true, false, false, false);
+        }
+
+        public IList<T> Paint3D<T>(IVertexFactory<T> factory)
+        {
+            var result = new List<T>(centers.Count * 3);
+            //draw via triangles
+            foreach (var c in centers)
+            {
+                DrawPolygon3D(c, GetColor(c.biome), factory, result);
+            }
+            return result;
+        }
+
+        private void DrawPolygon3D<T>(Center c, PortableColor color, IVertexFactory<T> factory, List<T> vertexBuffer)
+        {
+            //only used if Center c is on the edge of the graph. allows for completely filling in the outer polygons
+            Corner edgeCorner1 = null;
+            Corner edgeCorner2 = null;
+            foreach (Center n in c.neighbors)
+            {
+                
+                var e = EdgeWithCenters(c, n);
+
+                if (e.v0 == null)
+                {
+                    //outermost voronoi edges aren't stored in the graph
+                    continue;
+                }
+
+                //find a corner on the exterior of the graph
+                //if this Edge e has one, then it must have two,
+                //finding these two corners will give us the missing
+                //triangle to render. this special triangle is handled
+                //outside this for loop
+                var cornerWithOneAdjacent = e.v0.border ? e.v0 : e.v1;
+                if (cornerWithOneAdjacent.border)
+                {
+                    if (edgeCorner1 == null)
+                    {
+                        edgeCorner1 = cornerWithOneAdjacent;
+                    }
+                    else
+                    {
+                        edgeCorner2 = cornerWithOneAdjacent;
+                    }
+                }
+                vertexBuffer.Add(factory.CreateVertex(Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation), c.normal, color));
+                vertexBuffer.Add(factory.CreateVertex(Transform((float)e.v0.loc.X, (float)e.v0.loc.Y, (float)e.v0.elevation), e.v0.normal, color));
+                vertexBuffer.Add(factory.CreateVertex(Transform((float)e.v1.loc.X, (float)e.v1.loc.Y, (float)e.v1.elevation), e.v1.normal, color));
+            }
+
+            //handle the missing triangle
+            if (edgeCorner2 != null)
+            {
+                //if these two outer corners are NOT on the same exterior edge of the graph,
+                //then we actually must render a polygon (w/ 4 points) and take into consideration
+                //one of the four corners (either 0,0 or 0,height or width,0 or width,height)
+                //note: the 'missing polygon' may have more than just 4 points. this
+                //is common when the number of sites are quite low (less than 5), but not a problem
+                //with a more useful number of sites. 
+                //TODO: find a way to fix this
+
+                if (CloseEnough(edgeCorner1.loc.X, edgeCorner2.loc.X, 1))
+                {
+                    vertexBuffer.Add(factory.CreateVertex(Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation), c.normal, color));
+                    vertexBuffer.Add(factory.CreateVertex(Transform((float)edgeCorner1.loc.X, (float)edgeCorner1.loc.Y, (float)edgeCorner1.elevation), edgeCorner1.normal, color));
+                    vertexBuffer.Add(factory.CreateVertex(Transform((float)edgeCorner2.loc.X, (float)edgeCorner2.loc.Y, (float)edgeCorner2.elevation), edgeCorner2.normal, color));
+                }
+                else
+                {
+                    /*
+                    var points = new PointInt32[] {
+                        new PointInt32((int)c.loc.X, (int)c.loc.Y),
+                        new PointInt32((int)edgeCorner1.loc.X, (int)edgeCorner1.loc.Y),
+                        new PointInt32((int)((CloseEnough(edgeCorner1.loc.X, bounds.x, 1) || CloseEnough(edgeCorner2.loc.X, bounds.x, .5)) ? bounds.x : bounds.right), (int)((CloseEnough(edgeCorner1.loc.Y, bounds.y, 1) || CloseEnough(edgeCorner2.loc.Y, bounds.y, .5)) ? bounds.y : bounds.bottom)),
+                        new PointInt32((int)edgeCorner2.loc.X, (int)edgeCorner2.loc.Y),
+                    };
+
+                    g.FillPolygon(color, points);
+                    c.area += 0; //TODO: area of polygon given vertices*/
+                }
+            }
         }
 
         private void DrawPolygon(IGraphics g, Center c, PortableColor color)
@@ -221,7 +304,7 @@ namespace Barbar.Delaunay.Voronoi
         }
 
         //also records the area of each voronoi cell
-        public void Paint(IGraphics g, bool drawBiomes, bool drawRivers, bool drawSites, bool drawCorners, bool drawDelaunay, bool drawVoronoi)
+        public void Paint(IGraphics g, bool drawBiomes, bool drawRivers, bool drawSites, bool drawCorners, bool drawDelaunay)
         {
             int numSites = centers.Count;
 
@@ -407,6 +490,41 @@ namespace Barbar.Delaunay.Voronoi
                 pointCornerMap[index] = c;
             }
             return c;
+        }
+
+        // todo: remove hardcoded stuff
+        private Vector3D Transform(float x, float y, float z)
+        {
+            return new Vector3D(x / 1000f, z / 8f, y / 1000f);
+        }
+
+        private void AssignNormals()
+        {
+            foreach (var center in centers)
+            {
+                float nx = 0, ny = 0, nz = 0;
+                for (var i = 0; i < center.corners.Count; i++)
+                {
+                    var current = Transform((float)center.corners[i].loc.X, (float)center.corners[i].loc.Y, (float)center.corners[i].elevation);
+                    var j = (i + 1) % center.corners.Count;
+                    var next = Transform((float)center.corners[j].loc.X, (float)center.corners[j].loc.Y, (float)center.corners[j].elevation);
+
+                    nx += ((current.Y - next.Y) * (current.Z + next.Z));
+                    ny += ((current.Z - next.Z) * (current.X + next.X));
+                    nz += ((current.X - next.X) * (current.Y + next.Y));
+                }
+
+                center.normal = new Vector3D(nx, ny, nz).Normalize();
+            }
+            foreach(var corner in corners)
+            {
+                var normal = Vector3D.Zero;
+                foreach(var n in corner.touches)
+                {
+                    corner.normal += n.normal;
+                }
+                corner.normal = (corner.normal / corner.touches.Count).Normalize();
+            }
         }
 
         private void AssignCornerElevations()

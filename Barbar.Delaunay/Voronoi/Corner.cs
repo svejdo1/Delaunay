@@ -1,5 +1,6 @@
 using Barbar.Delaunay.Core;
 using System.Collections.Generic;
+using Barbar.Delaunay.Drawing;
 
 namespace Barbar.Delaunay.Voronoi
 {
@@ -15,5 +16,6 @@ namespace Barbar.Delaunay.Voronoi
         public Corner downslope;
         public int river;
         public double moisture;
+        public Vector3D normal;
     }
 }
