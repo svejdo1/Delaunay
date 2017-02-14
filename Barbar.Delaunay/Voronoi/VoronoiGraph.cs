@@ -162,6 +162,17 @@ namespace Barbar.Delaunay.Voronoi
             return result;
         }
 
+        private Vector3D GetNormal(Vector3D p, Vector3D q, Vector3D r)
+        {
+            return new Vector3D(0, -1, 0);
+            var result = ((q - p).CrossProduct(r - p)).Normalize();
+            if (result.Dot(result) < 0)
+            {
+                return ((q - r).CrossProduct(p - r)).Normalize();
+            }
+            return result;
+        }
+
         private void DrawPolygon3D<T>(Center c, PortableColor color, IVertexFactory<T> factory, List<T> vertexBuffer)
         {
             //only used if Center c is on the edge of the graph. allows for completely filling in the outer polygons
@@ -195,9 +206,15 @@ namespace Barbar.Delaunay.Voronoi
                         edgeCorner2 = cornerWithOneAdjacent;
                     }
                 }
-                vertexBuffer.Add(factory.CreateVertex(Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation), c.normal, color));
-                vertexBuffer.Add(factory.CreateVertex(Transform((float)e.v0.loc.X, (float)e.v0.loc.Y, (float)e.v0.elevation), e.v0.normal, color));
-                vertexBuffer.Add(factory.CreateVertex(Transform((float)e.v1.loc.X, (float)e.v1.loc.Y, (float)e.v1.elevation), e.v1.normal, color));
+                var p = Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation);
+                var q = Transform((float)e.v0.loc.X, (float)e.v0.loc.Y, (float)e.v0.elevation);
+                var r = Transform((float)e.v1.loc.X, (float)e.v1.loc.Y, (float)e.v1.elevation);
+                var normal = GetNormal(p, q, r);
+
+
+                vertexBuffer.Add(factory.CreateVertex(p, normal, color));
+                vertexBuffer.Add(factory.CreateVertex(q, normal, color));
+                vertexBuffer.Add(factory.CreateVertex(r, normal, color));
             }
 
             //handle the missing triangle
@@ -213,9 +230,14 @@ namespace Barbar.Delaunay.Voronoi
 
                 if (CloseEnough(edgeCorner1.loc.X, edgeCorner2.loc.X, 1))
                 {
-                    vertexBuffer.Add(factory.CreateVertex(Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation), c.normal, color));
-                    vertexBuffer.Add(factory.CreateVertex(Transform((float)edgeCorner1.loc.X, (float)edgeCorner1.loc.Y, (float)edgeCorner1.elevation), edgeCorner1.normal, color));
-                    vertexBuffer.Add(factory.CreateVertex(Transform((float)edgeCorner2.loc.X, (float)edgeCorner2.loc.Y, (float)edgeCorner2.elevation), edgeCorner2.normal, color));
+                    var p = Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation);
+                    var q = Transform((float)edgeCorner1.loc.X, (float)edgeCorner1.loc.Y, (float)edgeCorner1.elevation);
+                    var r = Transform((float)edgeCorner2.loc.X, (float)edgeCorner2.loc.Y, (float)edgeCorner2.elevation);
+                    var normal = GetNormal(p, q, r);
+
+                    vertexBuffer.Add(factory.CreateVertex(p, normal, color));
+                    vertexBuffer.Add(factory.CreateVertex(q, normal, color));
+                    vertexBuffer.Add(factory.CreateVertex(r, normal, color));
                 }
                 else
                 {
@@ -500,31 +522,35 @@ namespace Barbar.Delaunay.Voronoi
 
         private void AssignNormals()
         {
-            foreach (var center in centers)
-            {
-                float nx = 0, ny = 0, nz = 0;
-                for (var i = 0; i < center.corners.Count; i++)
-                {
-                    var current = Transform((float)center.corners[i].loc.X, (float)center.corners[i].loc.Y, (float)center.corners[i].elevation);
-                    var j = (i + 1) % center.corners.Count;
-                    var next = Transform((float)center.corners[j].loc.X, (float)center.corners[j].loc.Y, (float)center.corners[j].elevation);
+            //foreach (var center in centers)
+            //{
+            //    float nx = 0, ny = 0, nz = 0;
+            //    for (var i = 0; i < center.corners.Count; i++)
+            //    {
+            //        var current = Transform((float)center.corners[i].loc.X, (float)center.corners[i].loc.Y, (float)center.corners[i].elevation);
+            //        var j = (i + 1) % center.corners.Count;
+            //        var next = Transform((float)center.corners[j].loc.X, (float)center.corners[j].loc.Y, (float)center.corners[j].elevation);
 
-                    nx += ((current.Y - next.Y) * (current.Z + next.Z));
-                    ny += ((current.Z - next.Z) * (current.X + next.X));
-                    nz += ((current.X - next.X) * (current.Y + next.Y));
-                }
+            //        nx += ((current.Y - next.Y) * (current.Z + next.Z));
+            //        ny += ((current.Z - next.Z) * (current.X + next.X));
+            //        nz += ((current.X - next.X) * (current.Y + next.Y));
+            //    }
 
-                center.normal = new Vector3D(nx, ny, nz).Normalize();
-            }
-            foreach(var corner in corners)
-            {
-                var normal = Vector3D.Zero;
-                foreach(var n in corner.touches)
-                {
-                    corner.normal += n.normal;
-                }
-                corner.normal = (corner.normal / corner.touches.Count).Normalize();
-            }
+            //    center.normal = new Vector3D(nx, ny, nz).Normalize();
+            //    if (center.normal.Dot(center.normal) < 0)
+            //    {
+            //        center.normal = new Vector3D(-center.normal.X, -center.normal.Y, -center.normal.Z).Normalize();
+            //    }
+            //}
+            //foreach(var corner in corners)
+            //{
+            //    var normal = Vector3D.Zero;
+            //    foreach(var n in corner.touches)
+            //    {
+            //        corner.normal += n.normal;
+            //    }
+            //    corner.normal = (corner.normal / corner.touches.Count).Normalize();
+            //}
         }
 
         private void AssignCornerElevations()

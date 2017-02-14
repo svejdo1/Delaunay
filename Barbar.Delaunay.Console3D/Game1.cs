@@ -18,7 +18,8 @@ namespace Barbar.Delaunay.Console3D
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Effect basicEffect;
-        VertexBuffer vertexBuffer;
+        VertexBuffer terrain;
+        VertexBuffer axes;
 
         Matrix world
         {
@@ -74,12 +75,20 @@ namespace Barbar.Delaunay.Console3D
             basicEffect = Content.Load<Effect>("specular");
 
             var graph = SampleGenerator.CreateVoronoiGraph(1000, 30000, 2, 23);
-            var vertices = graph.Paint3D(new VertexPositionColorNormalFactory()).ToArray();
+            var vertices = graph.Paint3D(new VertexPositionColorNormalFactory());
+            var normal = new Vector3(0, -1, 0);
+
+            vertices.Add(new VertexPositionColorNormal(Vector3.Zero, Color.Red, normal));
+            vertices.Add(new VertexPositionColorNormal(new Vector3(1.15f, 0, 0), Color.Red, normal));
+            vertices.Add(new VertexPositionColorNormal(Vector3.Zero, Color.Green, normal));
+            vertices.Add(new VertexPositionColorNormal(new Vector3(0, 1.15f, 0), Color.Green, normal));
+            vertices.Add(new VertexPositionColorNormal(Vector3.Zero, Color.Blue, normal));
+            vertices.Add(new VertexPositionColorNormal(new Vector3(0, 0, 1.15f), Color.Blue, normal));
 
 
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColorNormal), vertices.Length, BufferUsage.WriteOnly);
-            vertexBuffer.SetData(vertices);
-
+            var rawVertices = vertices.ToArray();
+            terrain = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColorNormal), rawVertices.Length, BufferUsage.WriteOnly);
+            terrain.SetData(rawVertices);
             // TODO: use this.Content to load your game content here
         }
 
@@ -156,7 +165,7 @@ namespace Barbar.Delaunay.Console3D
             basicEffect.VertexColorEnabled = true;*/
             //basicEffect.EnableDefaultLighting();
 
-            GraphicsDevice.SetVertexBuffer(vertexBuffer);
+            GraphicsDevice.SetVertexBuffer(terrain);
 
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
@@ -165,8 +174,10 @@ namespace Barbar.Delaunay.Console3D
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, vertexBuffer.VertexCount / 3);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, (terrain.VertexCount - 6) / 3);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, terrain.VertexCount - 6, 3);
             }
+
 
             base.Draw(gameTime);
         }
