@@ -3,6 +3,8 @@ Delaunay
 
 Polygon map terrain generator, written in C#. See http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/
 
+![Example in 3D](https://github.com//svejdo1/Delaunay/blob/master/sample-3d.png?raw=true)
+
 ## Sample
 
 ```
