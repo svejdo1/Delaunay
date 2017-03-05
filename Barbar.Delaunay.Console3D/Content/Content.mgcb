@@ -19,3 +19,9 @@
 /processorParam:DebugMode=Auto
 /build:specular.fx
 
+#begin diffuse.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:diffuse.fx
+

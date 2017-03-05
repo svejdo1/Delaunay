@@ -19,13 +19,14 @@ namespace Barbar.Delaunay.Console3D
         SpriteBatch spriteBatch;
         Effect basicEffect;
         VertexBuffer terrain;
-        VertexBuffer axes;
+        float scale = 1.0f;
+        int meshTriangles = 0;
 
         Matrix world
         {
             get
             {
-                return Matrix.CreateTranslation(FocusPoint);
+                return Matrix.CreateScale(scale) * Matrix.CreateTranslation(FocusPoint);
             }
         }
 
@@ -72,11 +73,15 @@ namespace Barbar.Delaunay.Console3D
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            basicEffect = Content.Load<Effect>("specular");
+            //basicEffect = Content.Load<Effect>("specular");
+            basicEffect = Content.Load<Effect>("diffuse");
 
             var graph = SampleGenerator.CreateVoronoiGraph(1000, 30000, 2, 23);
             var vertices = graph.Paint3D(new VertexPositionColorNormalFactory());
+
             var normal = new Vector3(0, -1, 0);
+
+            meshTriangles = vertices.Count / 3;
 
             vertices.Add(new VertexPositionColorNormal(Vector3.Zero, Color.Red, normal));
             vertices.Add(new VertexPositionColorNormal(new Vector3(1.15f, 0, 0), Color.Red, normal));
@@ -84,7 +89,6 @@ namespace Barbar.Delaunay.Console3D
             vertices.Add(new VertexPositionColorNormal(new Vector3(0, 1.15f, 0), Color.Green, normal));
             vertices.Add(new VertexPositionColorNormal(Vector3.Zero, Color.Blue, normal));
             vertices.Add(new VertexPositionColorNormal(new Vector3(0, 0, 1.15f), Color.Blue, normal));
-
 
             var rawVertices = vertices.ToArray();
             terrain = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColorNormal), rawVertices.Length, BufferUsage.WriteOnly);
@@ -133,6 +137,15 @@ namespace Barbar.Delaunay.Console3D
                 FocusPoint += new Vector3(-delta, 0, 0);
             }
 
+            if (Keyboard.GetState().IsKeyDown(Keys.OemPlus))
+            {
+                scale += 0.1f;
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemMinus))
+            {
+                scale -= 0.1f;
+            }
+
 
             // TODO: Add your update logic here
 
@@ -171,10 +184,12 @@ namespace Barbar.Delaunay.Console3D
             rasterizerState.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizerState;
 
+
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, (terrain.VertexCount - 6) / 3);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, meshTriangles);
+                //GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, meshTriangles * 3, meshTriangles * 3);
                 GraphicsDevice.DrawPrimitives(PrimitiveType.LineList, terrain.VertexCount - 6, 3);
             }
 

@@ -12,18 +12,18 @@ float4x4 View;
 float4x4 Projection;
 
 float4 AmbientColor = float4(1, 1, 1, 1);
-float AmbientIntensity = 0.1;
+float AmbientIntensity = 1.0;
 
 float4x4 WorldInverseTranspose;
 
 float3 DiffuseLightDirection = float3(0, -1, 0);
 float4 DiffuseColor = float4(1, 1, 1, 1);
-float DiffuseIntensity = 1.0;
+float DiffuseIntensity = 0.0;
 
 float Shininess = 200;
 float4 SpecularColor = float4(1, 1, 1, 1);
-float SpecularIntensity = 0.003;
-float3 ViewVector = float3(0, -1, 0);
+float SpecularIntensity = 0.0;
+float3 ViewVector = float3(0, -1, -0.5);
 
 struct VertexShaderInput
 {

@@ -27,17 +27,15 @@ namespace Barbar.Delaunay.Drawing
 
         public Vector3D CrossProduct(Vector3D vector)
         {
-            return new Vector3D(X * vector.Z - Z * vector.Y, Z * vector.X - X * vector.Z, X * vector.Y - Y * vector.X);
-            //float x = Y * vector.Z - vector.Y * Z;
-            //float y = vector.X * Z - X * vector.Z;
-            //float z = X * vector.Y - vector.X * Y;
-            //return new Vector3D(x, y, z);
+            return new Vector3D(Y * vector.Z - vector.Y * Z,
+                                -(X * vector.Z - vector.X * Z),
+                                X * vector.Y - vector.X * Y);
         }
 
         public Vector3D Normalize()
         {
-            var length = Length;
-            return new Vector3D(X / length, Y / length, Z / length);
+            float factor = 1 / Length;
+            return new Vector3D(X * factor, Y * factor, Z * factor);
         }
 
         public static Vector3D operator +(Vector3D a, Vector3D b)

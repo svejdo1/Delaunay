@@ -162,15 +162,45 @@ namespace Barbar.Delaunay.Voronoi
             return result;
         }
 
-        private Vector3D GetNormal(Vector3D p, Vector3D q, Vector3D r)
+        private int Clockwise(Vector3D a, Vector3D b, Vector3D c)
         {
-            return new Vector3D(0, -1, 0);
-            var result = ((q - p).CrossProduct(r - p)).Normalize();
+            var n = (b - a).CrossProduct(c - a);
+            var centroid = (a + b + c) / 3;
+
+            // Taking the dot product of the normal with a vector from the given view point, V, to one of the vertices will give you a value whose sign indicates which way the vertices appear to wind when viewed from V:
+            double w = n.Dot(a - centroid);
+            return Math.Sign(w);
+        }
+
+        private void AddTriangle<T>(Vector3D a, Vector3D b, Vector3D c, PortableColor color, IVertexFactory<T> factory, List<T> vertexBuffer)
+        {
+            var normal = GetNormal(a, b, c);
+            if (normal.Y >= 0)
+            {
+                var xchg = b;
+                b = c;
+                c = xchg;
+                normal = GetNormal(a, b, c);
+            }
+
+            vertexBuffer.Add(factory.CreateVertex(a, normal, color));
+            vertexBuffer.Add(factory.CreateVertex(b, normal, color));
+            vertexBuffer.Add(factory.CreateVertex(c, normal, color));
+        }
+
+
+        private Vector3D GetNormal(Vector3D a, Vector3D b, Vector3D c)
+        {
+            //return new Vector3D(0, -1, 0);
+            var result = ((b - a).CrossProduct(c - a)).Normalize();
+            return result;
+            //return result;
+            /*
             if (result.Dot(result) < 0)
             {
                 return ((q - r).CrossProduct(p - r)).Normalize();
             }
-            return result;
+            return result;*/
         }
 
         private void DrawPolygon3D<T>(Center c, PortableColor color, IVertexFactory<T> factory, List<T> vertexBuffer)
@@ -209,12 +239,7 @@ namespace Barbar.Delaunay.Voronoi
                 var p = Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation);
                 var q = Transform((float)e.v0.loc.X, (float)e.v0.loc.Y, (float)e.v0.elevation);
                 var r = Transform((float)e.v1.loc.X, (float)e.v1.loc.Y, (float)e.v1.elevation);
-                var normal = GetNormal(p, q, r);
-
-
-                vertexBuffer.Add(factory.CreateVertex(p, normal, color));
-                vertexBuffer.Add(factory.CreateVertex(q, normal, color));
-                vertexBuffer.Add(factory.CreateVertex(r, normal, color));
+                AddTriangle(p, r, q, color, factory, vertexBuffer);
             }
 
             //handle the missing triangle
@@ -233,11 +258,7 @@ namespace Barbar.Delaunay.Voronoi
                     var p = Transform((float)c.loc.X, (float)c.loc.Y, (float)c.elevation);
                     var q = Transform((float)edgeCorner1.loc.X, (float)edgeCorner1.loc.Y, (float)edgeCorner1.elevation);
                     var r = Transform((float)edgeCorner2.loc.X, (float)edgeCorner2.loc.Y, (float)edgeCorner2.elevation);
-                    var normal = GetNormal(p, q, r);
-
-                    vertexBuffer.Add(factory.CreateVertex(p, normal, color));
-                    vertexBuffer.Add(factory.CreateVertex(q, normal, color));
-                    vertexBuffer.Add(factory.CreateVertex(r, normal, color));
+                    AddTriangle(p, r, q, color, factory, vertexBuffer);
                 }
                 else
                 {
